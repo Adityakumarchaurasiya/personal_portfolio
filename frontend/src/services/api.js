@@ -1,0 +1,197 @@
+const API_BASE = (import.meta.env.VITE_API_URL || "http://localhost:5000").replace(
+  /\/$/,
+  ""
+);
+const API_ROOT = `${API_BASE}/api`;
+
+const TOKEN_KEY = "token";
+
+export function getToken() {
+  return localStorage.getItem(TOKEN_KEY);
+}
+
+export function setToken(token) {
+  if (token) {
+    localStorage.setItem(TOKEN_KEY, token);
+  } else {
+    localStorage.removeItem(TOKEN_KEY);
+  }
+}
+
+async function request(path, options = {}, auth = false) {
+  const headers = {
+    "Content-Type": "application/json",
+    ...(options.headers || {}),
+  };
+
+  if (auth) {
+    const token = getToken();
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+  }
+
+  const response = await fetch(`${API_ROOT}${path}`, {
+    ...options,
+    headers,
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const message = data?.message || `Request failed (${response.status})`;
+    throw new Error(message);
+  }
+
+  return data;
+}
+
+async function uploadRequest(path, formData) {
+  const headers = {};
+  const token = getToken();
+  if (token) {
+    headers.Authorization = `Bearer ${token}`;
+  }
+
+  const response = await fetch(`${API_ROOT}${path}`, {
+    method: "POST",
+    headers,
+    body: formData,
+  });
+
+  const data = await response.json().catch(() => ({}));
+
+  if (!response.ok) {
+    const message = data?.message || `Upload failed (${response.status})`;
+    throw new Error(message);
+  }
+
+  return data;
+}
+
+export const api = {
+  health: () => request("/health"),
+
+  login: (email, password) =>
+    request("/auth/login", {
+      method: "POST",
+      body: JSON.stringify({ email, password }),
+    }),
+
+  me: () => request("/auth/me", {}, true),
+
+  logout: () => request("/auth/logout", { method: "POST" }, true),
+
+  resetPassword: (email) =>
+    request("/auth/reset-password", {
+      method: "POST",
+      body: JSON.stringify({ email }),
+    }),
+
+  getPortfolio: () => request("/portfolio"),
+  updatePortfolioHero: (hero) =>
+    request(
+      "/portfolio/hero",
+      { method: "PUT", body: JSON.stringify(hero) },
+      true
+    ),
+  updatePortfolioAbout: (about) =>
+    request(
+      "/portfolio/about",
+      { method: "PUT", body: JSON.stringify(about) },
+      true
+    ),
+  uploadAboutImage: (file) => {
+    const formData = new FormData();
+    formData.append("image", file);
+    return uploadRequest("/upload/about-image", formData);
+  },
+  uploadHeroImage: (file) => {
+    const formData = new FormData();
+    formData.append("image", file);
+    return uploadRequest("/upload/hero-image", formData);
+  },
+  uploadProjectImage: (file) => {
+    const formData = new FormData();
+    formData.append("image", file);
+    return uploadRequest("/upload/project-image", formData);
+  },
+
+  getYouTubeLive: () => request("/youtube/live"),
+  getGitHubProfile: () => request("/github/profile"),
+  getSocialOverview: () => request("/social/overview"),
+
+  getSkills: () => request("/skills"),
+  createSkill: (payload) =>
+    request("/skills", { method: "POST", body: JSON.stringify(payload) }, true),
+  updateSkill: (id, payload) =>
+    request(
+      `/skills/${id}`,
+      { method: "PUT", body: JSON.stringify(payload) },
+      true
+    ),
+  deleteSkill: (id) => request(`/skills/${id}`, { method: "DELETE" }, true),
+
+  getProjects: () => request("/projects"),
+  createProject: (payload) =>
+    request(
+      "/projects",
+      { method: "POST", body: JSON.stringify(payload) },
+      true
+    ),
+  updateProject: (id, payload) =>
+    request(
+      `/projects/${id}`,
+      { method: "PUT", body: JSON.stringify(payload) },
+      true
+    ),
+  deleteProject: (id) =>
+    request(`/projects/${id}`, { method: "DELETE" }, true),
+
+  getYouTube: () => request("/youtube"),
+  updateYouTube: (payload) =>
+    request("/youtube", { method: "PUT", body: JSON.stringify(payload) }, true),
+
+  getArticles: () => request("/articles"),
+  createArticle: (payload) =>
+    request(
+      "/articles",
+      { method: "POST", body: JSON.stringify(payload) },
+      true
+    ),
+  scrapeArticle: (url) =>
+    request(
+      "/articles/scrape",
+      { method: "POST", body: JSON.stringify({ url }) },
+      true
+    ),
+  updateArticle: (id, payload) =>
+    request(
+      `/articles/${id}`,
+      { method: "PUT", body: JSON.stringify(payload) },
+      true
+    ),
+  deleteArticle: (id) =>
+    request(`/articles/${id}`, { method: "DELETE" }, true),
+
+  getAchievements: () => request("/achievements"),
+  createAchievement: (payload) =>
+    request("/achievements", { method: "POST", body: JSON.stringify(payload) }, true),
+  deleteAchievement: (id) =>
+    request(`/achievements/${id}`, { method: "DELETE" }, true),
+
+  getServices: () => request("/services"),
+  createService: (payload) =>
+    request("/services", { method: "POST", body: JSON.stringify(payload) }, true),
+  deleteService: (id) =>
+    request(`/services/${id}`, { method: "DELETE" }, true),
+
+  sendChatMessage: (message, history) =>
+    request("/chatbot", { method: "POST", body: JSON.stringify({ message, history }) }),
+
+  getContact: () => request("/contact"),
+  updateContact: (payload) =>
+    request("/contact", { method: "PUT", body: JSON.stringify(payload) }, true),
+};
+
+export { API_BASE };

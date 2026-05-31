@@ -1,0 +1,314 @@
+/* Projects & Skills Page Styles mapped to global theme variables for full Dark Mode support */
+
+.projects-page-wrap {
+  padding: 0;
+}
+
+.project-layout-container {
+  width: min(1200px, 92%);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.project-custom-section {
+  padding: 4rem 0;
+}
+
+.projects-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2rem;
+  margin-bottom: 4rem;
+  margin-top: 1.5rem;
+}
+
+.project-card {
+  background: var(--card-bg);
+  border-radius: 1.5rem;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.project-card:hover {
+  transform: translateY(-6px);
+  box-shadow: var(--card-shadow);
+  border-color: var(--card-hover-border);
+}
+
+.project-image {
+  width: 100%;
+  height: 220px;
+  object-fit: cover;
+  background: var(--surface-soft);
+  border-bottom: 1px solid var(--border);
+}
+
+.project-badge {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  padding: 0.35rem 0.85rem;
+  border-radius: 2rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.project-content {
+  padding: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+
+.project-title {
+  font-size: 1.35rem;
+  margin-bottom: 0.75rem;
+  color: var(--text);
+}
+
+.project-description {
+  color: var(--muted);
+  margin-bottom: 1.25rem;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  flex-grow: 1;
+}
+
+.tech-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.tech-tag {
+  background: var(--surface-soft);
+  color: var(--text);
+  border: 1px solid var(--border);
+  padding: 0.3rem 0.8rem;
+  border-radius: 2rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.project-links {
+  display: flex;
+  gap: 1rem;
+  margin-top: auto;
+  border-top: 1px solid var(--border);
+  padding-top: 1.25rem;
+}
+
+.project-link {
+  text-decoration: none;
+  padding: 0.55rem 1.2rem;
+  border-radius: 2rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+  min-height: auto;
+}
+
+.project-link.github-link {
+  background: var(--text);
+  color: var(--bg);
+}
+
+.project-link.github-link:hover {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.project-link.live-link {
+  background: var(--accent);
+  color: var(--btn-primary-text, #fff);
+}
+
+.project-link.live-link:hover {
+  background: var(--btn-primary-hover);
+  transform: translateY(-1px);
+}
+
+/* Skills Showcase */
+.skills-showcase {
+  margin-bottom: 4rem;
+  margin-top: 1.5rem;
+}
+
+.skills-category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 2rem;
+}
+
+.skill-category-card {
+  background: var(--card-bg);
+  border-radius: 1.5rem;
+  padding: 1.75rem;
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+
+.skill-category-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--card-hover-border);
+  box-shadow: var(--card-shadow);
+}
+
+.category-title {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.75rem;
+  padding-bottom: 0.8rem;
+  border-bottom: 2px solid var(--accent);
+}
+
+.category-title i {
+  font-size: 1.8rem;
+  color: var(--accent);
+  width: 2.2rem;
+  text-align: center;
+}
+
+.category-title h3 {
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.skills-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.skill-progress-item {
+  width: 100%;
+}
+
+.skill-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 550;
+  color: var(--text);
+}
+
+.skill-name {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.skill-header span.percentage-text {
+  font-family: "Space Grotesk", sans-serif;
+  color: var(--accent);
+}
+
+.progress-track {
+  background: var(--surface-soft);
+  border-radius: 1rem;
+  height: 8px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.progress-fill {
+  background: linear-gradient(90deg, var(--accent), var(--accent-soft));
+  border-radius: 1rem;
+  height: 100%;
+  width: 0%;
+  transition: width 1.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Floating Skills Bubble Grid */
+.floating-skills {
+  background: var(--surface-soft);
+  border: 1px solid var(--border);
+  border-radius: 2rem;
+  padding: 2.5rem;
+  margin-top: 2rem;
+}
+
+.floating-skills h3 {
+  text-align: center;
+  margin-bottom: 1.75rem;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  color: var(--text);
+}
+
+.floating-skills h3 i {
+  color: var(--accent);
+}
+
+.skills-bubble-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.skill-bubble {
+  background: var(--card-bg);
+  color: var(--text);
+  padding: 0.65rem 1.35rem;
+  border-radius: 3rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  border: 1px solid var(--border);
+  transition: all 0.25s ease;
+  cursor: default;
+}
+
+.skill-bubble:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  background: var(--accent);
+  color: var(--btn-primary-text, #fff);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.skills-showcase-section {
+  border-radius: 2rem;
+  padding: 3rem 2rem;
+  margin-bottom: 4rem;
+}
+
+@media (max-width: 768px) {
+  .projects-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .skills-category-grid {
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+  }
+  
+  .skills-showcase-section {
+    padding: 2rem 1.25rem !important;
+    border-radius: 1.5rem !important;
+    margin-bottom: 2.5rem;
+  }
+  
+  .floating-skills {
+    padding: 1.5rem 1.25rem;
+    margin-top: 1rem;
+  }
+}
