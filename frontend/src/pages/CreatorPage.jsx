@@ -83,7 +83,7 @@ function CreatorPage() {
             <div className="dev-details-card">
               <div className="dev-avatar-container">
                 {github?.avatarUrl ? (
-                  <img src={github.avatarUrl} alt="Aditya Kumar Verma" className="dev-avatar-img" />
+                  <img src={github.avatarUrl} alt="Aditya Kumar" className="dev-avatar-img" />
                 ) : (
                   <div className="dev-avatar-fallback">
                     <i className="fas fa-user-circle"></i>
@@ -91,8 +91,8 @@ function CreatorPage() {
                 )}
               </div>
               <div className="dev-info-container">
-                <h2>Aditya Kumar Verma</h2>
-                <p className="dev-tagline">AI Explorer &amp; Full Stack Software Developer</p>
+                <h2>Aditya Kumar</h2>
+                <p className="dev-tagline">Software Developer &amp; Content Creator</p>
                 <p className="dev-bio">
                   Building automated systems, training intelligent agents, and sharing my tech journey
                   with developers globally. Focused on frontend elegance, robust APIs, and learning in public.

@@ -1,7 +1,7 @@
 const Portfolio = require("../models/Portfolio");
 const { defaultPortfolio } = require("../data/seedDefaults");
 
-const HERO_FIELDS = ["title", "description", "imageUrl"];
+const HERO_FIELDS = ["title", "description", "imageUrl", "videoUrl"];
 
 async function getPortfolio(_req, res) {
   try {

@@ -2,7 +2,7 @@ import { useCallback, useRef, useState } from "react";
 
 const PORTRAIT_SRC = "/about-portrait.svg";
 
-function AboutImageFrame({ src, alt = "Aditya Verma" }) {
+function AboutImageFrame({ src, alt = "Aditya Kumar" }) {
   const displaySrc = src || PORTRAIT_SRC;
   const wrapRef = useRef(null);
   const [tilt, setTilt] = useState({ x: 0, y: 0 });

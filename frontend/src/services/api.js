@@ -6,6 +6,7 @@ const API_ROOT = `${API_BASE}/api`;
 
 const TOKEN_KEY = "token";
 
+// Kept as fallback stubs to prevent import errors in other modules
 export function getToken() {
   return localStorage.getItem(TOKEN_KEY);
 }
@@ -24,16 +25,10 @@ async function request(path, options = {}, auth = false) {
     ...(options.headers || {}),
   };
 
-  if (auth) {
-    const token = getToken();
-    if (token) {
-      headers.Authorization = `Bearer ${token}`;
-    }
-  }
-
   const response = await fetch(`${API_ROOT}${path}`, {
     ...options,
     headers,
+    credentials: "include", // Required for express-session cookies to pass through CORS
   });
 
   const data = await response.json().catch(() => ({}));
@@ -47,16 +42,10 @@ async function request(path, options = {}, auth = false) {
 }
 
 async function uploadRequest(path, formData) {
-  const headers = {};
-  const token = getToken();
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
-
   const response = await fetch(`${API_ROOT}${path}`, {
     method: "POST",
-    headers,
     body: formData,
+    credentials: "include", // Required for express-session cookies to pass through CORS
   });
 
   const data = await response.json().catch(() => ({}));
@@ -88,6 +77,12 @@ export const api = {
       body: JSON.stringify({ email }),
     }),
 
+  confirmResetPassword: (token, password) =>
+    request("/auth/reset-password/confirm", {
+      method: "POST",
+      body: JSON.stringify({ token, password }),
+    }),
+
   getPortfolio: () => request("/portfolio"),
   updatePortfolioHero: (hero) =>
     request(
@@ -111,10 +106,20 @@ export const api = {
     formData.append("image", file);
     return uploadRequest("/upload/hero-image", formData);
   },
+  uploadHeroVideo: (file) => {
+    const formData = new FormData();
+    formData.append("video", file);
+    return uploadRequest("/upload/hero-video", formData);
+  },
   uploadProjectImage: (file) => {
     const formData = new FormData();
     formData.append("image", file);
     return uploadRequest("/upload/project-image", formData);
+  },
+  uploadGenericFile: (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    return uploadRequest("/upload/file", formData);
   },
 
   getYouTubeLive: () => request("/youtube/live"),
@@ -192,6 +197,33 @@ export const api = {
   getContact: () => request("/contact"),
   updateContact: (payload) =>
     request("/contact", { method: "PUT", body: JSON.stringify(payload) }, true),
+
+  // Experiences CRUD Endpoints
+  getExperiences: () => request("/experiences"),
+  createExperience: (payload) =>
+    request("/experiences", { method: "POST", body: JSON.stringify(payload) }, true),
+  updateExperience: (id, payload) =>
+    request(`/experiences/${id}`, { method: "PUT", body: JSON.stringify(payload) }, true),
+  deleteExperience: (id) =>
+    request(`/experiences/${id}`, { method: "DELETE" }, true),
+
+  // Testimonials CRUD Endpoints
+  getTestimonials: () => request("/testimonials"),
+  createTestimonial: (payload) =>
+    request("/testimonials", { method: "POST", body: JSON.stringify(payload) }, true),
+  updateTestimonial: (id, payload) =>
+    request(`/testimonials/${id}`, { method: "PUT", body: JSON.stringify(payload) }, true),
+  deleteTestimonial: (id) =>
+    request(`/testimonials/${id}`, { method: "DELETE" }, true),
+
+  // Site Settings Endpoints
+  getSettings: () => request("/settings"),
+  updateSettings: (payload) =>
+    request("/settings", { method: "PUT", body: JSON.stringify(payload) }, true),
+
+  // File Manager Endpoints
+  getMediaFiles: () => request("/upload/files", {}, true),
+  deleteMediaFile: (name) => request(`/upload/files/${name}`, { method: "DELETE" }, true),
 };
 
 export { API_BASE };

@@ -6,8 +6,8 @@ import "./HomePage.css";
 
 const DEFAULT_GITHUB = {
   login: "Adityakumarchaurasiya",
-  name: "Aditya Verma",
-  bio: "AI Developer & Content Creator building intelligent agentic workflows and full-stack web applications.",
+  name: "Aditya Kumar",
+  bio: "Software Developer & Content Creator building intelligent agentic workflows and full-stack web applications.",
   followers: 890,
   publicRepos: 45,
   following: 50,
@@ -105,6 +105,7 @@ function HomePage() {
         loadWithFallback(() => api.getArticles(), homeFallbacks.articles),
         loadWithFallback(() => api.getContact(), homeFallbacks.contact),
         loadWithFallback(() => api.getGitHubProfile(), null),
+        loadWithFallback(() => api.getSettings(), null),
       ]);
 
       if (!active) return;
@@ -117,18 +118,27 @@ function HomePage() {
         articlesResult,
         contactResult,
         githubResult,
+        settingsResult,
       ] = results;
 
       setHero(portfolioResult.data?.hero || homeFallbacks.hero);
       setYoutube(youtubeResult.data || homeFallbacks.youtube);
-      setSkills(skillsResult.data?.length ? skillsResult.data : homeFallbacks.skills);
+      setSkills(skillsResult.data?.length ? skillsResult.data : []);
       setProjects(
-        projectsResult.data?.length ? projectsResult.data : homeFallbacks.projects
+        projectsResult.data?.length ? projectsResult.data : []
       );
       setArticles(
-        articlesResult.data?.length ? articlesResult.data : homeFallbacks.articles
+        articlesResult.data?.length ? articlesResult.data : []
       );
       setContact(contactResult.data || homeFallbacks.contact);
+
+      if (settingsResult.data?.siteTitle) {
+        document.title = settingsResult.data.siteTitle;
+        let metaDesc = document.querySelector('meta[name="description"]');
+        if (metaDesc) {
+          metaDesc.setAttribute("content", settingsResult.data.metaDescription || "");
+        }
+      }
 
       const gh = githubResult.data;
       setGithub(gh && !gh.skipped ? gh : DEFAULT_GITHUB);
@@ -137,9 +147,6 @@ function HomePage() {
         [
           portfolioResult,
           youtubeResult,
-          skillsResult,
-          projectsResult,
-          articlesResult,
           contactResult,
         ].some((item) => item.fromFallback)
       );
@@ -164,7 +171,7 @@ function HomePage() {
                 <p className="home-loading">Loading hero…</p>
               ) : (
                 <>
-                  <span className="hero-badge">AI Developer &amp; Creator</span>
+                  <span className="hero-badge">AI Engineer &amp; Full-Stack Developer &amp; Creator</span>
                   <h1 className="hero-title">{renderHeroTitle(hero.title)}</h1>
                   <p className="hero-description">{hero.description}</p>
                   <div className="hero-actions">
@@ -185,7 +192,7 @@ function HomePage() {
               ) : (
                 <video
                   className="hero-cover-video"
-                  src="https://assets.mixkit.co/videos/preview/mixkit-code-running-on-a-computer-screen-2224-large.mp4"
+                  src={hero.videoUrl || hero.imageUrl || "https://assets.mixkit.co/videos/preview/mixkit-code-running-on-a-computer-screen-2224-large.mp4"}
                   autoPlay
                   loop
                   muted
@@ -201,9 +208,9 @@ function HomePage() {
       <section className="section youtube-stats-section alt">
         <div className="container">
           <header className="section-header">
-            <h2>YouTube Channel Stats</h2>
+            <h2>YouTube Channel </h2>
             <p className="section-subtitle">
-              Real-time video and subscriber metrics from connected APIs.
+             Sharing practical content on software development, AI, automation, and emerging technologies.
             </p>
             <div className="section-underline" aria-hidden />
           </header>
@@ -235,9 +242,9 @@ function HomePage() {
       <section className="section github-stats-section">
         <div className="container">
           <header className="section-header">
-            <h2>GitHub Developer Stats</h2>
+            <h2>GitHub Profile</h2>
             <p className="section-subtitle">
-              Live repositories and community statistics.
+              Open-source contributions, projects, and developer activity — all in one place.
             </p>
             <div className="section-underline" aria-hidden />
           </header>
@@ -288,9 +295,9 @@ function HomePage() {
       <section className="section alt">
         <div className="container">
           <header className="section-header">
-            <h2>Explore the portfolio</h2>
+            <h2>Explore My Work</h2>
             <p className="section-subtitle">
-              Jump into skills, projects, content, and background.
+             Discover my skills, projects, technical content, and journey as a developer.
             </p>
             <div className="section-underline" aria-hidden />
           </header>
@@ -459,7 +466,7 @@ function HomePage() {
           <header className="section-header">
             <h2>Let's Connect</h2>
             <p className="section-subtitle">
-              Reach out to collaborate on AI applications, full-stack projects, or content writing.
+              Have an idea, project, or collaboration in mind? I’d love to hear from you.
             </p>
             <div className="section-underline" aria-hidden />
           </header>
@@ -468,9 +475,7 @@ function HomePage() {
           ) : (
             <div className="connect-wrapper" style={{ textAlign: "center", maxWidth: "800px", margin: "0 auto" }}>
               <p className="connect-message" style={{ color: "var(--hp-muted)", marginBottom: "2rem", lineHeight: "1.6" }}>
-                I build intelligent automation systems, generative AI agent workflows, and publish technical guides. 
-                Whether you have an interesting project, a content writing requirement, or just want to say hello, 
-                feel free to reach out via email or any of my social profiles below!
+                I build Generative AI applications, intelligent automation systems, AI agent workflows, and full-stack products, while also creating technical content and guides. Whether you’re looking to collaborate on a project, need technical content, or want to explore an idea together, feel free to reach out.
               </p>
               <div className="social-icons connect-row" style={{ display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap", marginBottom: "2.5rem" }}>
                 {contact.email && (
