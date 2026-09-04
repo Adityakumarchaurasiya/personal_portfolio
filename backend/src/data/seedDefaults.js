@@ -2,18 +2,18 @@ const defaultPortfolio = {
   hero: {
     title: "Crafting digital experiences with purpose.",
     description:
-      "Full-stack developer, AI explorer, and content storyteller building products.",
-    imageUrl: "",
+      "Software Developer & Content Creator building products and sharing what I learn.",
+    imageUrl: "/hero_developer_banner.png",
+    videoUrl: "",
   },
   about: {
-    mission: "AI Developer & Creator focused on building intelligent solutions.",
+    mission: "Software Developer & Content Creator focused on building intelligent web solutions and educational dev content.",
     journey:
-      "Learning full-stack development, AI automation, and sharing knowledge in public while shipping real-world projects.",
+      "Building scalable React and Node.js applications, AI agent workflows, and sharing knowledge publicly with developers worldwide.",
     imageUrl: "",
   },
 };
 
-// Clear all mock list data so the database is clean for real inputs
 const defaultSkills = [];
 const defaultProjects = [];
 const defaultYouTube = {

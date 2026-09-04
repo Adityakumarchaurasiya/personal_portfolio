@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link } from "react-router-dom";
 import { homeFallbacks } from "../data/homeFallbacks";
 import { api, resolveMediaUrl } from "../services/api";
@@ -80,6 +80,132 @@ const OVERVIEW_LINKS = [
     description: "Background, mission, and how I approach building software.",
   },
 ];
+
+function HeroIntroVideo({ videoUrl, imageUrl }) {
+  const [isPlaying, setIsPlaying] = useState(true);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const videoRef = useRef(null);
+
+  const finalVideoSrc = resolveMediaUrl(videoUrl) || "https://assets.mixkit.co/videos/preview/mixkit-code-running-on-a-computer-screen-2224-large.mp4";
+  const posterSrc = resolveMediaUrl(imageUrl) || "/hero_developer_banner.png";
+
+  const startVoiceIntro = () => {
+    if (!("speechSynthesis" in window)) return;
+    try {
+      window.speechSynthesis.cancel();
+      const text =
+        "Hello! Welcome to my portfolio. I am Aditya Kumar, a Software Developer and Content Creator building intelligent agentic workflows and full-stack web applications. Explore my work and feel free to connect!";
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.rate = 0.98;
+      utterance.pitch = 1.0;
+      utterance.onstart = () => setIsSpeaking(true);
+      utterance.onend = () => setIsSpeaking(false);
+      utterance.onerror = () => setIsSpeaking(false);
+      window.speechSynthesis.speak(utterance);
+      setIsSpeaking(true);
+    } catch (err) {
+      console.warn("Speech synthesis error:", err);
+    }
+  };
+
+  const handleSpeechToggle = () => {
+    if (isSpeaking) {
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+    } else {
+      startVoiceIntro();
+    }
+  };
+
+  const handleVideoToggle = () => {
+    if (videoRef.current) {
+      if (isPlaying) {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      } else {
+        videoRef.current.play();
+        setIsPlaying(true);
+      }
+    }
+  };
+
+  useEffect(() => {
+    // 1. Auto-start video playback immediately on load
+    if (videoRef.current) {
+      videoRef.current.play().catch(() => {});
+    }
+
+    // 2. Auto-start voice intro
+    const timer = setTimeout(() => {
+      startVoiceIntro();
+    }, 600);
+
+    // 3. User interaction listener to trigger audio automatically if blocked by browser policy
+    const handleUserGesture = () => {
+      if (videoRef.current && videoRef.current.paused) {
+        videoRef.current.play().catch(() => {});
+      }
+      if ("speechSynthesis" in window && !window.speechSynthesis.speaking) {
+        startVoiceIntro();
+      }
+      window.removeEventListener("click", handleUserGesture);
+      window.removeEventListener("touchstart", handleUserGesture);
+    };
+
+    window.addEventListener("click", handleUserGesture);
+    window.addEventListener("touchstart", handleUserGesture);
+
+    return () => {
+      clearTimeout(timer);
+      if ("speechSynthesis" in window) {
+        window.speechSynthesis.cancel();
+      }
+      window.removeEventListener("click", handleUserGesture);
+      window.removeEventListener("touchstart", handleUserGesture);
+    };
+  }, []);
+
+  return (
+    <div className="hero-intro-card">
+      <div className="hero-video-wrapper">
+        <video
+          ref={videoRef}
+          className="hero-cover-video"
+          src={finalVideoSrc}
+          poster={posterSrc}
+          autoPlay
+          loop
+          muted
+          playsInline
+        />
+
+        {/* Minimalist Glassmorphism Control Bar */}
+        <div className="clean-video-overlay">
+          <div className="clean-video-controls">
+            <button
+              type="button"
+              className={`clean-btn voice-btn ${isSpeaking ? "active-voice" : ""}`}
+              onClick={handleSpeechToggle}
+              title={isSpeaking ? "Mute Voice Intro" : "Play Voice Introduction"}
+            >
+              <i className={`fa-solid ${isSpeaking ? "fa-volume-high fa-beat-fade" : "fa-volume-low"}`} />
+              <span>{isSpeaking ? "Speaking Intro..." : "Voice Intro"}</span>
+            </button>
+
+            <button
+              type="button"
+              className="clean-btn play-btn"
+              onClick={handleVideoToggle}
+              title={isPlaying ? "Pause Video" : "Play Video"}
+            >
+              <i className={`fa-solid ${isPlaying ? "fa-pause" : "fa-play"}`} />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function HomePage() {
   const [loading, setLoading] = useState(true);
@@ -190,14 +316,7 @@ function HomePage() {
               {loading ? (
                 <p className="home-loading hero-visual-loading">Loading video…</p>
               ) : (
-                <video
-                  className="hero-cover-video"
-                  src={resolveMediaUrl(hero.videoUrl || hero.imageUrl) || "https://assets.mixkit.co/videos/preview/mixkit-code-running-on-a-computer-screen-2224-large.mp4"}
-                  autoPlay
-                  loop
-                  muted
-                  playsInline
-                />
+                <HeroIntroVideo videoUrl={hero.videoUrl} imageUrl={hero.imageUrl} />
               )}
             </div>
           </div>

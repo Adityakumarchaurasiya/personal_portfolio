@@ -3,7 +3,8 @@ export const homeFallbacks = {
     title: "Crafting digital experiences with purpose.",
     description:
       "Software Developer & Content Creator building products and sharing what I learn.",
-    imageUrl: "",
+    imageUrl: "/hero_developer_banner.png",
+    videoUrl: "",
   },
   youtube: {
     channel: "AdityaKnowledgeHub-e8h",
