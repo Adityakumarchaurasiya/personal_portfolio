@@ -28,6 +28,8 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
+  "https://www.adityachaurasiya.xyz",
+  "https://adityachaurasiya.xyz",
   process.env.FRONTEND_URL
 ].filter(Boolean);
 
