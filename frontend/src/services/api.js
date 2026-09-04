@@ -4,6 +4,18 @@ const API_BASE = (import.meta.env.VITE_API_URL || "http://localhost:5000").repla
 );
 const API_ROOT = `${API_BASE}/api`;
 
+export function resolveMediaUrl(url) {
+  if (!url) return "";
+  if (url.includes("localhost:5000")) {
+    const path = url.split("localhost:5000")[1];
+    return `${API_BASE}${path}`;
+  }
+  if (url.startsWith("/")) {
+    return `${API_BASE}${url}`;
+  }
+  return url;
+}
+
 const TOKEN_KEY = "token";
 
 // Kept as fallback stubs to prevent import errors in other modules

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { homeFallbacks } from "../data/homeFallbacks";
-import { api } from "../services/api";
+import { api, resolveMediaUrl } from "../services/api";
 import "./HomePage.css";
 
 const DEFAULT_GITHUB = {
@@ -192,7 +192,7 @@ function HomePage() {
               ) : (
                 <video
                   className="hero-cover-video"
-                  src={hero.videoUrl || hero.imageUrl || "https://assets.mixkit.co/videos/preview/mixkit-code-running-on-a-computer-screen-2224-large.mp4"}
+                  src={resolveMediaUrl(hero.videoUrl || hero.imageUrl) || "https://assets.mixkit.co/videos/preview/mixkit-code-running-on-a-computer-screen-2224-large.mp4"}
                   autoPlay
                   loop
                   muted
