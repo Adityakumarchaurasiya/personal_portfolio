@@ -94,6 +94,48 @@ function Chatbot() {
     handleSendMessage(query);
   };
 
+  const renderFormattedText = (text) => {
+    if (!text) return null;
+    const lines = text.split("\n");
+    return lines.map((line, i) => {
+      const parts = line.split(/(\[.*?\]\(https?:\/\/[^\s)]+\)|https?:\/\/[^\s]+)/g);
+      return (
+        <p key={i} style={{ margin: 0, marginBottom: "0.35rem" }}>
+          {parts.map((part, j) => {
+            const matchLink = part.match(/^\[(.*?)\]\((https?:\/\/[^\s)]+)\)$/);
+            if (matchLink) {
+              return (
+                <a
+                  key={j}
+                  href={matchLink[2]}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "#00f2fe", textDecoration: "underline", fontWeight: 600 }}
+                >
+                  {matchLink[1]}
+                </a>
+              );
+            }
+            if (part.startsWith("http://") || part.startsWith("https://")) {
+              return (
+                <a
+                  key={j}
+                  href={part}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{ color: "#00f2fe", textDecoration: "underline", fontWeight: 600 }}
+                >
+                  {part}
+                </a>
+              );
+            }
+            return part;
+          })}
+        </p>
+      );
+    });
+  };
+
   return (
     <div className="chatbot-container">
       {/* Floating Toggle Button */}
@@ -122,9 +164,7 @@ function Chatbot() {
             <div key={idx} className={`message-wrapper ${msg.isUser ? "user-wrap" : "bot-wrap"}`}>
               {!msg.isUser && <i className="fas fa-robot chatbot-avatar-icon"></i>}
               <div className={`message ${msg.isUser ? "user-message" : "bot-message"}`}>
-                {msg.text.split("\n").map((line, i) => (
-                  <p key={i} style={{ margin: 0, marginBottom: "0.25rem" }}>{line}</p>
-                ))}
+                {renderFormattedText(msg.text)}
 
                 {msg.isQuickReplies && (
                   <div className="quick-replies">
@@ -135,7 +175,7 @@ function Chatbot() {
                       💼 Experience
                     </button>
                     <button className="quick-reply" onClick={() => handleQuickReply("pricing")}>
-                      💰 Pricing
+                      💰 Rates
                     </button>
                     <button className="quick-reply" onClick={() => handleQuickReply("contact")}>
                       📞 Contact

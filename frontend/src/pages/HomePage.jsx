@@ -177,6 +177,8 @@ function HeroIntroVideo({ videoUrl, imageUrl }) {
           loop
           muted
           playsInline
+          onCanPlay={(e) => e.target.play().catch(() => {})}
+          onLoadedData={(e) => e.target.play().catch(() => {})}
         />
 
         {/* Minimalist Glassmorphism Control Bar */}
