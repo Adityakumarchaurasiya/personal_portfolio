@@ -1,0 +1,104 @@
+name: Pull request review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: pr-review-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  review:
+    name: Build and review
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out pull request
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: |
+            frontend/package-lock.json
+            backend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Build frontend
+        id: frontend-build
+        working-directory: frontend
+        run: npm run build
+        continue-on-error: true
+
+      - name: Install backend dependencies
+        working-directory: backend
+        run: npm ci
+
+      - name: Audit backend dependencies
+        id: backend-audit
+        working-directory: backend
+        run: npm audit --omit=dev
+        continue-on-error: true
+
+      - name: Publish review summary
+        if: always()
+        uses: actions/github-script@v7
+        env:
+          FRONTEND_BUILD: ${{ steps.frontend-build.outcome }}
+          BACKEND_AUDIT: ${{ steps.backend-audit.outcome }}
+        with:
+          script: |
+            const { owner, repo } = context.repo;
+            const pullNumber = context.payload.pull_request.number;
+            const build = process.env.FRONTEND_BUILD;
+            const audit = process.env.BACKEND_AUDIT;
+            const status = build === 'success' && audit === 'success' ? '✅' : '⚠️';
+            const buildResult = build === 'success' ? 'passed' : 'failed';
+            const auditResult = audit === 'success' ? 'found no known production dependency issues' : 'reported one or more production dependency issues';
+
+            const body = [
+              '<!-- automated-pr-review -->',
+              `## ${status} Automated PR review`,
+              '',
+              `- Frontend build: **${buildResult}**`,
+              `- Backend dependency audit: **${auditResult}**`,
+              '',
+              'Please address failed checks and review security-sensitive changes manually before merging.',
+              '',
+              '_This review is informational and does not approve or merge the pull request._',
+            ].join('\n');
+
+            const comments = await github.paginate(github.rest.issues.listComments, {
+              owner,
+              repo,
+              issue_number: pullNumber,
+              per_page: 100,
+            });
+            const previous = comments.find((comment) =>
+              comment.user.type === 'Bot' && comment.body.includes('<!-- automated-pr-review -->')
+            );
+
+            if (previous) {
+              await github.rest.issues.updateComment({
+                owner,
+                repo,
+                comment_id: previous.id,
+                body,
+              });
+            } else {
+              await github.rest.issues.createComment({
+                owner,
+                repo,
+                issue_number: pullNumber,
+                body,
+              });
+            }
